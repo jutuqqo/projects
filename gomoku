@@ -1,0 +1,108 @@
+def make_empty_board(sz):
+    board = []
+    for i in range(sz):
+        board.append([" "]*sz)
+    return board
+
+
+def print_board(board):
+    s = "*"
+    for i in range(len(board[0])-1):
+        s += str(i%10) + "|"
+    s += str((len(board[0])-1)%10)
+    s += "*\n"
+    for i in range(len(board)):
+        s += str(i%10)
+        for j in range(len(board[0])-1):
+            s += str(board[i][j]) + "|"
+        s += str(board[i][len(board[0])-1]) 
+    
+        s += "*\n"
+    s += (len(board[0])*2 + 1)*"*"
+    print(s)
+
+
+def is_empty(board): # 전체 empty(" ")의 여부 
+    for i in range (len(board)):
+        for j in range(len(board[i])):
+            if board[i][j] != ' ': 
+                print(board[i][j])
+                return False  
+    return True  
+
+def test_is_empty():
+    board  = make_empty_board(8)
+    if is_empty(board) == True:
+        print("TEST CASE for is_empty PASSED")
+    else:
+        print("TEST CASE for is_empty FAILED")
+    
+def put_seq_on_board(board, y, x, d_y,d_x,length, col):
+    for i in range(length):
+        board[y][x] = col
+        y += d_y
+        x += d_x
+
+def is_bounded(board, y_end,x_end,length,d_y,d_x):
+    y_axis_length = len(board)
+    
+    #parameter check 
+    if (y_end<0 or y_end > y_axis_length or x_end<0 or x_end >len(board[0])) or (length<1) or (d_y>1 or d_y<0) or (d_x>1 or d_x<-1):
+        print('Error') 
+
+    #check next end position
+    next_end_y = y_end + d_y
+    next_end_x = x_end + d_x 
+ 
+    #next end position boundary check 
+    if (next_end_y < 0 or next_end_y > 7) or (next_end_x < 0 or next_end_x > 7) or (board[next_end_y][next_end_x] != ' '):
+        next_position_status = 'block'
+    elif board[next_end_y][next_end_x] == ' ':
+        next_position_status = 'open'
+    #elif board[next_end_y][next_end_x ] != ' ':
+        #next_position_status = 'block'
+
+    #previous position check
+    prev_y = y_end - (d_y*length)
+    prev_x = x_end - (d_x*length)
+
+    if (prev_y < 0 or prev_y > 7) or (prev_x < 0 or prev_x > 7) or (board[prev_y][prev_x] != ' '):
+        prev_position_status = 'block'
+    #elif board[prev_y][prev_x] != ' ':
+        #prev_position_status = 'block'
+    elif board[prev_y][prev_x] == ' ':
+        prev_position_status = 'open'
+
+    #determine open/semi-open/closed 
+    if next_position_status == 'open' and prev_position_status == 'open':
+        return 'OPEN'
+    if (next_position_status == 'open' and prev_position_status == 'block') or (next_position_status == 'block' and prev_position_status == 'open'):
+        return 'SEMI-OPEN'
+    if next_position_status == 'block'and prev_position_status == 'block': 
+        return 'CLOSED'
+    
+
+
+def test_is_bounded():
+    board = make_empty_board(8)
+    #x = 5; y =1; d_x=0; d_y=1; length = 3 
+    #x = 0; y = 5; d_x=1;d_y=1;length = 3
+    x = 3; y = 4; d_x = -1; d_y = 1; length = 4 
+    put_seq_on_board(board, y, x, d_y, d_x, length, "w")
+    print_board(board)
+    
+    #y_end = 3
+    #x_end = 5
+    #y_end =7
+    #x_end =2
+    y_end = 7
+    x_end = 0
+
+
+    if is_bounded(board, y_end, x_end, length, d_y, d_x) == 'SEMI-OPEN':
+        print("TEST CASE for is_bounded PASSED")
+    else:
+        print("TEST CASE for is_bounded FAILED")
+
+test_is_bounded()
+
