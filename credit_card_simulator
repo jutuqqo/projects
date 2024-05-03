@@ -5,8 +5,8 @@ def initialize():
   global amount, month, country
   global owing_intst, owing_recent, tot
   global is_deactivated  
-
-
+  
+  
   is_deactivated = False
   owing_intst = 0
   owing_recent = 0
@@ -17,7 +17,7 @@ def initialize():
   last_day = 0
   last_month = 0
   amount = 0
-
+  
 
 def date_same_or_later(day, month, last_day, last_month):
   if month == last_month and day >= last_day:
@@ -35,25 +35,25 @@ def all_three_different(c1:str,c2:str,c3:str):
 
 def amount_owed(day,month):
   global last_day,last_month,is_deactivated,owing_recent,owing_intst,tot
-
+  
   # check date 
   if not date_same_or_later(day, month, last_day, last_month):
     return tot
-
+  
   # update recent value corresponds to current date
   i = month - (last_month+1)
   new_recent = 0
-
-  #month 랑 last_month가 한달차이일때
+  
+  # difference between month and last_month is one month
   if i == 0:
     new_recent = owing_recent 
-
-  #month 랑 last month가 두달이상 차이 날때
+    
+  # difference between month and last month is over two months
   if i > 0:
     new_recent = owing_recent * ((1.05)**i)
     owing_recent = 0
 
-  #month 랑 last month 가 같을때 
+  # month = last month
   if i < 0:
     last_month = month 
     last_day = day
@@ -63,16 +63,16 @@ def amount_owed(day,month):
     owing_intst = owing_intst*(1.05**(month - last_month)) 
     owing_intst += new_recent
     owing_recent = 0
-
+    
   last_month = month 
   last_day = day
   return(owing_recent + owing_intst)
 
-
+  
 
 def purchase(amount:float,day:int,month:int,country:str):
   # initialize global variable 
-  global owing_recent,last_day,last_month,c1,c2,c3,is_deactivated #day2,month2 없애고, day1이 last_day, last_month 
+  global owing_recent,last_day,last_month,c1,c2,c3,is_deactivated 
 
   # check activation
   if is_deactivated == True:
@@ -86,7 +86,7 @@ def purchase(amount:float,day:int,month:int,country:str):
   day2 = day1
   month2 = month1  
   '''
-
+  
   # check countries 
   c3 = c2 
   c2 = c1
@@ -101,33 +101,33 @@ def purchase(amount:float,day:int,month:int,country:str):
     last_month = month 
     last_day = day
     return owing_recent
-
+    
   # proceed
-  #amount owed check 
+  # amount owed check 
   else:
     val = amount_owed(day,month)
     owing_recent+=amount
     tot = val+owing_recent
     return tot 
-
+  
 def pay_bill(amount,day,month):
   global owing_recent, owing_intst,last_day,last_month
-
-  #date check
+  
+  # date check
   if not date_same_or_later(day, month, last_day, last_month):
     print ('error')
-
-  #recent와 interest가 현재 month에 맞는 값으로 update가 되어야함
+    
+  # recent and interest should be updated to current month
   val = amount_owed(day,month)
 
   if val > amount: 
-    if amount > owing_intst: #갚으려는 돈이 INTEREST 가 붙는 돈의 양보다 크지만, TOTAL VAL 을 커버하지 못할때 
+    if amount > owing_intst: #if the amount of money the user is trying to pay back is larger than money that will generate INTEREST but smaller than TOTAL VAL 
       owing_intst -= amount
       owing_recent -= amount
-    if amount <= owing_intst: #갚으려는 돈의 양이 interest가 붙는 돈의 양보다 적은 경우 
+    if amount <= owing_intst: #pay back money is less than interest
       owing_intst -= amount
 
-  elif val <= amount: #갚으려는 돈의 양이 현재 빚보다 클때나 정확히 같을때 
+  elif val <= amount: #pay back money is larger or equal to the money owed
     owing_recent = 0
     owing_intst = 0
 
@@ -166,5 +166,6 @@ if __name__ == "__main__":
 
 
 
+ 
 
-
+  
